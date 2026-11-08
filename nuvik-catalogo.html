@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Catálogo NUVIK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: cabecera fija con logo y buscador, tira de categorías pegajosa y grilla de productos en tarjetas sobrias. Look oscuro único, fiel al logo (negro, blanco, azul eléctrico). */
+:root {
+  color-scheme: dark;
+  --bg: #05070b;
+  --surface: #0d1219;
+  --surface-2: #131a24;
+  --line: #1d2633;
+  --fg: #f3f6fb;
+  --muted: #8a96a8;
+  --accent: #1f86ff;
+  --ok: #38d39f;
+  --wa: #25d366;
+  --warn: #f0b24a;
+  --display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --body: "Manrope", "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-block: 0 96px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  background: var(--bg); z-index: 20;
+}
+.wrap { max-width: 1120px; margin: 0 auto; }
+
+.notice {
+  margin-top: 12px; padding: 8px 12px; border: 1px dashed var(--line);
+  border-radius: 6px; color: var(--muted); font-size: 12.5px;
+}
+
+header.top { padding-block: 28px 8px; display: flex; flex-direction: column; gap: 18px; }
+.brand img { display: block; height: 44px; width: auto; max-width: 100%; }
+.intro h1 {
+  font-family: var(--display); font-weight: 700; font-size: clamp(26px, 5vw, 40px);
+  line-height: 1.1; margin: 0 0 8px; letter-spacing: -0.01em; text-wrap: balance;
+}
+.intro h1 span { color: var(--accent); }
+.intro p { margin: 0; color: var(--muted); max-width: 56ch; }
+
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: var(--bg); padding-block: 12px; margin-top: 14px;
+  border-bottom: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.search { position: relative; flex: 1; min-width: 0; }
+.row1 { display: flex; gap: 8px; }
+select#sort { flex: none; height: 44px; padding: 0 10px; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; font: 600 14px var(--body); max-width: 44%; }
+select#sort:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.search input {
+  width: 100%; height: 44px; padding: 0 14px 0 42px;
+  background: var(--surface); color: var(--fg);
+  border: 1px solid var(--line); border-radius: 8px;
+  font: inherit; font-size: 16px;
+}
+.search input::placeholder { color: var(--muted); }
+.search input:focus-visible, .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.search svg { position: absolute; left: 13px; top: 12px; width: 20px; height: 20px; stroke: var(--muted); fill: none; stroke-width: 2; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; height: 36px; padding: 0 14px; border-radius: 6px;
+  background: var(--surface); color: var(--muted); border: 1px solid var(--line);
+  font: 600 13px var(--body); cursor: pointer; white-space: nowrap;
+}
+.chip:hover { color: var(--fg); border-color: #2c3a4d; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.count { margin: 18px 0 12px; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 14px; }
+.card {
+  display: flex; flex-direction: column; min-width: 0;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+}
+.card:hover { border-color: #2c3a4d; }
+.thumb {
+  aspect-ratio: 1 / 0.82; display: grid; place-items: center; max-width: 100%;
+  background: linear-gradient(160deg, var(--surface-2), var(--bg));
+  border-bottom: 1px solid var(--line); position: relative;
+}
+.thumb svg { width: 46%; height: auto; stroke: var(--fg); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.thumb::after {
+  content: ""; position: absolute; left: 0; top: 0; width: 26px; height: 26px;
+  background: var(--accent); clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+.info { padding: 12px 12px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.cat { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.name { font-family: var(--display); font-weight: 600; font-size: 16px; line-height: 1.2; margin: 0; overflow-wrap: anywhere; }
+.spec { color: var(--muted); font-size: 12.5px; margin: 0; }
+.foot { margin-top: auto; padding-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.price { font-family: var(--display); font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; }
+.stock { font-size: 11.5px; font-weight: 700; padding: 3px 8px; border-radius: 4px; background: var(--surface-2); }
+.stock.ok { color: var(--ok); }
+.stock.low { color: var(--warn); }
+
+.empty { padding: 48px 0; text-align: center; color: var(--muted); }
+footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (min-width: 720px) {
+  header.top { flex-direction: row; align-items: flex-end; justify-content: space-between; }
+  .brand img { height: 56px; }
+}
+.badge { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.badge.new { background: var(--accent); border-color: var(--accent); color: #fff; }
+.bat { margin: 0; color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.price small { font-size: 12px; color: var(--muted); font-weight: 500; }
+.thumb svg { width: 34%; }
+.grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+.wa-btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line); color: var(--fg); font: 700 15px var(--body); text-decoration: none; }
+.wa-btn:hover { border-color: var(--wa); }
+.wa-btn img { width: 18px; height: 18px; display: block; }
+.wa-link img { width: 14px; height: 14px; display: block; }
+.wa-btn svg, .wa-fab svg, .wa-link svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.wa-fab:hover { filter: brightness(1.08); }
+.wa-btn:focus-visible, .wa-fab:focus-visible, .wa-link:focus-visible, .copy:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.cta { margin: 16px 0 0; }
+.wa-link { margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; height: 36px; border-radius: 6px; border: 1px solid var(--line); color: var(--wa); font: 700 13px var(--body); text-decoration: none; }
+.wa-link:hover { border-color: var(--wa); }
+.wa-link svg { width: 18px; height: 18px; }
+.wa-fab { position: fixed; z-index: 15; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 44px; height: 44px; display: block; text-decoration: none; }
+.wa-fab img { width: 100%; height: 100%; display: block; filter: drop-shadow(0 4px 10px rgba(0,0,0,.55)); }
+.wa-fab svg { width: 28px; height: 28px; }
+.contact { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.contact b { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+.copy { height: 28px; padding: 0 10px; border-radius: 5px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: 600 12px var(--body); cursor: pointer; }
+.pricebox { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.ars { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.old { font-size: 12px; color: var(--muted); text-decoration: line-through; margin-left: 6px; font-weight: 500; }
+.price.ask { font-size: 15px; color: var(--muted); font-weight: 600; }
+</style>
+<style>img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcwAAABmCAMAAABx9VGIAAAAYFBMVEX///////7//v/+//7+/v/+/v7+/v39/v3//f/+/f/+/f7+/f3+/P79/f39/P38/Pz6+vrMzc4Tg/g5VXMKCw0EBAQCAgICAQEBAQEBAQAAAQECAAABAAEBAAAAAAEAAAALmcq7AAA2QElEQVR42q19iXrqutKs8RCIwdi54EEOgvd/y9tV3fJswtr/4Xz7rCSALaulHqqrW9Hrf/BybvEH7/3kl5dbf2Xxic3Xzp/l7/7t27h09/6K/o9b9eEmi1e3uJH/bIL85m9yC//5JHu7/7Nzm9eTSY7CuD6bx23xzb69lpxf/MktxtL57en1G0N5jvfbFebD77358eT38+sPP3bdf17xfuOHrfH0/fvrPJ+LpxsvEv3TU7q5MN38QWdDcvurYvNmfm8hBcG5D/etSML7nU/2b7backn1myPyf6kP3vs5LrzlB90HGsh/tqNWr2j30n5fmLv6xW8Js59+/R81wORzbrFB/UwUk4lz/efaazJtS0H3/p9HOXz46eZjeruh+53LO/+p3l4K8+/n92+36kef8e8v6rcXrs2zqh+blaf342+2F9wwCRNF1i92ofvk2eZz/37d+k8k3nX+tVYPz01hukf39wVnXsFEzS72tHf906zcSsC+e/q3Cm7vz25b+LMbPLfMq4rALczowoHyi/U8mNSpWuj1Mm6ygfeH3a10+vO5Zc8/2r7dwj66MJ7n9obsHh9tq+eWMNcz303mehhCz/vIFfourHfPJTw4I37fezON4Rebx/u+G5+h356QzoUd693E9lOafm39hn3p54ul87s+nF/sM7/yv33bLjRleKBRDXTyNH5L7Xe7urZ75192fzrTH9hMDtH5xeYRl9Pr4/diksJFB1l8ZgoXixMXePYLn/dNPALR+6lZxvTYUJ0uwfFtzvLEifeum+/tbRXBVbnSD65pWr+IfnT9jjP1cC4I04ns52pNZlTUZ2d+so2u3zeXU2HKzfq1MJ+zqRjUrB9vGNZh0zwWZg8+T2vf+f0Ns+leHxjSHSE77nMbR9d17W83+3Y/X85efvJu+vTO/9J6cuPYSuha+3zL2X/2XWfXaRu3NBz+D3/SDSusnQuzb3/HSWvb3/lz949WXotLyng6VUDjVnczP9qvQj4brYijXRol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" alt="NUVIK" width="460" height="102"></div>
+    <div class="intro">
+      <h1>Tecnología que <span>va con vos</span></h1>
+      <p>Línea iPhone nuevos sellados y usados, con el porcentaje de batería informado en cada equipo. Precios en dólares y en pesos, por unidad.</p>
+      <p class="cta"><a class="wa-btn" href="https://wa.me/5493426213030?text=Hola!%20Quiero%20consultar%20por%20un%20iPhone" target="_blank" rel="noopener"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAkFBMVEUb0mYqzFkczF4hzF2n4K9Zz2ocu0MWuGIAuygiwTwevEwA//8Af38avE3X8too46UesDdFvlkAfx8UtjtxzYS86cJqampVqlVy5aETujUAqqpV1FV///9IyVcAAAAyu0UmtTz8/f06wk5V0WNUzWIA/wAAqlUbtDUq0WMa02Yp0mTL7NAA/3+I2ZUA/1V404fC1KIQAAAAMHRSTlMg4GKc//3cFwP9oAECW/8K8v8Dl///AgMFdwMGAv4A/v7//v7+AQP+0k+w/wL/A/89FGf2AAADxElEQVR42pWXCbuqIBCGEdJSW856d4UI0mzx//+7O2AsbkXznNs5F52X7xtGA1SOQh7X8InQCZNGBSH4hBAMrY9yfDcajVzU6Ik09eEgDjri+BA15ITuFx8DLrJEmNQHE8J91JpxfAiQRzV51OUIxxDd33VzuqkpZgEgEOn02YjIUIQPgOlxbaebjFjUGPUIqJffqOnjBwoKoUUcpwCX8lSrOx6GllefytsIAOWD/OJ5ACH2CcjOj6OQ/OIgABJhS0DGP47iuAiMuHAaOsAN9BcvRY3vlUSdfvRifiFq1PW1AuQSNe4S1z9PATFBeX4HqALY9MPi/L1oAzREnQmkDdzzocBfex0h9Yy0CQDIXSOssi5/v+DiOYD8zRUAOsh5Pt8BexEi4aTaX/oVvJp8kBDQDg36kOg2KWC/DVlLDu2E8pIYAI/3LtoACREp18guAQCuHuCbh/QjpJfY3skXHmAveJAH5BwUtAcIKSMn8Pp3T0HPQhAAPCBkSzgAhFiAbkSuBP1VuPKghcSIeP99P79mQAMazl0Vr94ihtQQqggAWvAuYMAaSM3gw1CAiFM3wIyELedhgAgAvdiaGrAQCZTXAwBtjYk4LWgAIOpb4F43vvMAgq7BgGlMnCkvnisgiMAvP5iwrUDhht41PhzoAIN7mGsGSgs7ToWgbJivAHg0CbNlOBfMXGXQ5ucWEAMAhodpOMap6+gvM+l7R/waILh6Goe24B7vmSgYU3eYkW1PBawi+kmGEtR8230PwbxXDRhxgEa/0kb5nBVb/9Uieq8q5cuWAACjIijXvotRXB0A0vM/Ux6AsJgFxAbAsx8/0KrcTAE4Y+0cQDDnYKm+nCI6GZWYtnF2a7CDL0a1O+DTBBCxnQC0noCj/nqfkwAiaDtSsaiYEbCUen9wgw3KHIFVdLCGbWUdbNQWRSk4rgin84iKxpaxeDf5jGc/V3aPtOGM0ocM0V6v15hWjJlWTlC5vgNW8P3I5oKqf/BRVW9VVenS6uD3jaKykMNriT0K9/wYJEvNZlefH1DEXgrKUmK2/Eg5wPw1AOPkl5QWIB+VYDw7OEizncy93foyeWX2isEetZTuvACt/Jp+yJfSO7F8lJ/mUpok9Gk+WZb+CRZBDbNOWpLh5Q7T+Xq8vbGUbvLBsQ+22imvouw3XnYDWZLOuU8TddO6f/C8lZuEbHSyXF3WH1BTnFRTjCTZqK6Ro6Pvr39dcnclXylEBn2rCm4nj5JPNftKTh6+jytf1kV53AHkM6IMQDT5zDZop45W6/Hx/z9itdxbKEPTRQAAAABJRU5ErkJggg==" alt="" width="24" height="24">Escribinos por WhatsApp</a></p>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="row1">
+      <label class="search" for="q">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Buscar modelo, color o capacidad" autocomplete="off">
+      </label>
+      <select id="sort" aria-label="Ordenar">
+        <option value="asc">Menor precio</option>
+        <option value="desc">Mayor precio</option>
+        <option value="bat">Mayor batería</option>
+        <option value="">Orden original</option>
+      </select>
+    </div>
+    <div class="chips" id="series" role="group" aria-label="Modelo"></div>
+    <div class="chips" id="estados" role="group" aria-label="Estado"></div>
+  </div>
+
+  <div class="count" id="count"></div>
+  <main class="grid" id="grid"></main>
+  <div class="empty" id="empty" hidden>No encontramos productos con esa búsqueda.</div>
+
+  <footer><span class="contact">WhatsApp <b id="tel">+54 342 621 3030</b> <button class="copy" id="copy" type="button">Copiar número</button></span><span>Precios en dólares y en pesos argentinos, sujetos a cambios y disponibilidad.</span></footer>
+</div>
+
+<a class="wa-fab" href="https://wa.me/5493426213030?text=Hola!%20Quiero%20consultar%20por%20un%20iPhone" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAkFBMVEUb0mYqzFkczF4hzF2n4K9Zz2ocu0MWuGIAuygiwTwevEwA//8Af38avE3X8too46UesDdFvlkAfx8UtjtxzYS86cJqampVqlVy5aETujUAqqpV1FV///9IyVcAAAAyu0UmtTz8/f06wk5V0WNUzWIA/wAAqlUbtDUq0WMa02Yp0mTL7NAA/3+I2ZUA/1V404fC1KIQAAAAMHRSTlMg4GKc//3cFwP9oAECW/8K8v8Dl///AgMFdwMGAv4A/v7//v7+AQP+0k+w/wL/A/89FGf2AAADxElEQVR42pWXCbuqIBCGEdJSW856d4UI0mzx//+7O2AsbkXznNs5F52X7xtGA1SOQh7X8InQCZNGBSH4hBAMrY9yfDcajVzU6Ik09eEgDjri+BA15ITuFx8DLrJEmNQHE8J91JpxfAiQRzV51OUIxxDd33VzuqkpZgEgEOn02YjIUIQPgOlxbaebjFjUGPUIqJffqOnjBwoKoUUcpwCX8lSrOx6GllefytsIAOWD/OJ5ACH2CcjOj6OQ/OIgABJhS0DGP47iuAiMuHAaOsAN9BcvRY3vlUSdfvRifiFq1PW1AuQSNe4S1z9PATFBeX4HqALY9MPi/L1oAzREnQmkDdzzocBfex0h9Yy0CQDIXSOssi5/v+DiOYD8zRUAOsh5Pt8BexEi4aTaX/oVvJp8kBDQDg36kOg2KWC/DVlLDu2E8pIYAI/3LtoACREp18guAQCuHuCbh/QjpJfY3skXHmAveJAH5BwUtAcIKSMn8Pp3T0HPQhAAPCBkSzgAhFiAbkSuBP1VuPKghcSIeP99P79mQAMazl0Vr94ihtQQqggAWvAuYMAaSM3gw1CAiFM3wIyELedhgAgAvdiaGrAQCZTXAwBtjYk4LWgAIOpb4F43vvMAgq7BgGlMnCkvnisgiMAvP5iwrUDhht41PhzoAIN7mGsGSgs7ToWgbJivAHg0CbNlOBfMXGXQ5ucWEAMAhodpOMap6+gvM+l7R/waILh6Goe24B7vmSgYU3eYkW1PBawi+kmGEtR8230PwbxXDRhxgEa/0kb5nBVb/9Uieq8q5cuWAACjIijXvotRXB0A0vM/Ux6AsJgFxAbAsx8/0KrcTAE4Y+0cQDDnYKm+nCI6GZWYtnF2a7CDL0a1O+DTBBCxnQC0noCj/nqfkwAiaDtSsaiYEbCUen9wgw3KHIFVdLCGbWUdbNQWRSk4rgin84iKxpaxeDf5jGc/V3aPtOGM0ocM0V6v15hWjJlWTlC5vgNW8P3I5oKqf/BRVW9VVenS6uD3jaKykMNriT0K9/wYJEvNZlefH1DEXgrKUmK2/Eg5wPw1AOPkl5QWIB+VYDw7OEizncy93foyeWX2isEetZTuvACt/Jp+yJfSO7F8lJ/mUpok9Gk+WZb+CRZBDbNOWpLh5Q7T+Xq8vbGUbvLBsQ+22imvouw3XnYDWZLOuU8TddO6f/C8lZuEbHSyXF3WH1BTnFRTjCTZqK6Ro6Pvr39dcnclXylEBn2rCm4nj5JPNftKTh6+jytf1kV53AHkM6IMQDT5zDZop45W6/Hx/z9itdxbKEPTRQAAAABJRU5ErkJggg==" alt="" width="24" height="24"></a>
+<div hidden>
+</div>
+
+<script>
+// Datos del catálogo. Cada fila: modelo, color, capacidad, estado, batería (solo usados), cantidad, precio en US$ y en ARS. Sin precio muestra "Consultar precio".
+var PRODUCTOS = [{"modelo": "iPhone 13", "color": "Azul", "gb": "128GB", "estado": "Usado", "bat": "84%", "precio": 350, "antes": null, "ars": 551250, "qty": 1}, {"modelo": "iPhone 13", "color": "Azul", "gb": "128GB", "estado": "Usado", "bat": "87%", "precio": 350, "antes": null, "ars": 551250, "qty": 1}, {"modelo": "iPhone 13", "color": "Medianoche", "gb": "128GB", "estado": "Usado", "bat": "88%", "precio": 360, "antes": null, "ars": 567000, "qty": 1}, {"modelo": "iPhone 13", "color": "Medianoche", "gb": "128GB", "estado": "Usado", "bat": "87%", "precio": 360, "antes": null, "ars": 567000, "qty": 1}, {"modelo": "iPhone 13", "color": "Starlight", "gb": "128GB", "estado": "Usado", "bat": "88%", "precio": 360, "antes": null, "ars": 567000, "qty": 1}, {"modelo": "iPhone 14", "color": "Starlight", "gb": "128GB", "estado": "Usado", "bat": "86%", "precio": 400, "antes": null, "ars": 630000, "qty": 1}, {"modelo": "iPhone 13", "color": "Medianoche", "gb": "256GB", "estado": "Usado", "bat": "85%", "precio": 400, "antes": null, "ars": 630000, "qty": 1}, {"modelo": "iPhone 14", "color": "Starlight", "gb": "128GB", "estado": "Usado", "bat": "90%", "precio": 420, "antes": null, "ars": 661500, "qty": 3}, {"modelo": "iPhone 14", "color": "Starlight", "gb": "128GB", "estado": "Usado", "bat": "94%", "precio": 430, "antes": null, "ars": 677250, "qty": 1}, {"modelo": "iPhone 14", "color": "Starlight", "gb": "128GB", "estado": "Usado", "bat": "96%", "precio": 440, "antes": null, "ars": 693000, "qty": 1}, {"modelo": "iPhone 14", "color": "Starlight", "gb": "128GB", "estado": "Usado", "bat": "98%", "precio": 450, "antes": null, "ars": 708750, "qty": 1}, {"modelo": "iPhone 14", "color": "Medianoche", "gb": "128GB", "estado": "Usado", "bat": "100%", "precio": 460, "antes": null, "ars": 724500, "qty": 1}, {"modelo": "iPhone 15", "color": "Negro", "gb": "128GB", "estado": "Usado", "bat": "85%", "precio": 500, "antes": null, "ars": 787500, "qty": 1}, {"modelo": "iPhone 15", "color": "Rosa", "gb": "128GB", "estado": "Usado", "bat": "85%", "precio": 500, "antes": null, "ars": 787500, "qty": 1}, {"modelo": "iPhone 15", "color": "Rosa", "gb": "128GB", "estado": "Usado", "bat": "88%", "precio": 500, "antes": null, "ars": 787500, "qty": 1}, {"modelo": "iPhone 15", "color": "Rosa", "gb": "128GB", "estado": "Usado", "bat": "87%", "precio": 500, "antes": null, "ars": 787500, "qty": 1}, {"modelo": "iPhone 15", "color": "Negro", "gb": "128GB", "estado": "Usado", "bat": "88%", "precio": 510, "antes": null, "ars": 803250, "qty": 1}, {"modelo": "iPhone 15", "color": "Negro", "gb": "128GB", "estado": "Usado", "bat": "90%", "precio": 520, "antes": null, "ars": 819000, "qty": 1}, {"modelo": "iPhone 15", "color": "Rosa", "gb": "128GB", "estado": "Usado", "bat": "90%", "precio": 520, "antes": null, "ars": 819000, "qty": 1}, {"modelo": "iPhone 13 Pro Max", "color": "Verde Alpino", "gb": "512GB", "estado": "Usado", "bat": "85%", "precio": 550, "antes": null, "ars": 866250, "qty": 1}, {"modelo": "iPhone 15", "color": "Negro", "gb": "256GB", "estado": "Usado", "bat": "88%", "precio": 580, "antes": null, "ars": 913500, "qty": 1}, {"modelo": "iPhone 15", "color": "Rosa", "gb": "256GB", "estado": "Usado", "bat": "91%", "precio": 580, "antes": 600, "ars": 913500, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Natural", "gb": "128GB", "estado": "Usado", "bat": "100%", "precio": 620, "antes": null, "ars": 976500, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Natural", "gb": "128GB", "estado": "Usado", "bat": "85%", "precio": 620, "antes": null, "ars": 976500, "qty": 1}, {"modelo": "iPhone 16", "color": "Negro", "gb": "128GB", "estado": "Usado", "bat": "86%", "precio": 630, "antes": null, "ars": 992250, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Blanco", "gb": "128GB", "estado": "Usado", "bat": "86%", "precio": 630, "antes": null, "ars": 992250, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Natural", "gb": "128GB", "estado": "Usado", "bat": "86%", "precio": 630, "antes": null, "ars": 992250, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Natural", "gb": "128GB", "estado": "Usado", "bat": "87%", "precio": 630, "antes": null, "ars": 992250, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Negro", "gb": "128GB", "estado": "Usado", "bat": "86%", "precio": 630, "antes": null, "ars": 992250, "qty": 2}, {"modelo": "iPhone 16", "color": "Ultramarino", "gb": "128GB", "estado": "Usado", "bat": "87%", "precio": 640, "antes": null, "ars": 1008000, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Natural", "gb": "128GB", "estado": "Usado", "bat": "88%", "precio": 640, "antes": null, "ars": 1008000, "qty": 1}, {"modelo": "iPhone 16", "color": "Blanco", "gb": "256GB", "estado": "Usado", "bat": "81%", "precio": 650, "antes": null, "ars": 1023750, "qty": 1}, {"modelo": "iPhone 16", "color": "Ultramarino", "gb": "128GB", "estado": "Usado", "bat": "88%", "precio": 650, "antes": null, "ars": 1023750, "qty": 2}, {"modelo": "iPhone 14 Pro Max", "color": "Morado Profundo", "gb": "128GB", "estado": "Usado", "bat": "100%", "precio": 650, "antes": null, "ars": 1023750, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Negro", "gb": "256GB", "estado": "Usado", "bat": "100%", "precio": 660, "antes": null, "ars": 1039500, "qty": 1}, {"modelo": "iPhone 16", "color": "Negro", "gb": "128GB", "estado": "Usado", "bat": "90%", "precio": 670, "antes": null, "ars": 1055250, "qty": 1}, {"modelo": "iPhone 16", "color": "Ultramarino", "gb": "128GB", "estado": "Usado", "bat": "90%", "precio": 670, "antes": null, "ars": 1055250, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Negro", "gb": "256GB", "estado": "Usado", "bat": "100%", "precio": 670, "antes": null, "ars": 1055250, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Natural", "gb": "128GB", "estado": "Usado", "bat": "97%", "precio": 670, "antes": null, "ars": 1055250, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Negro", "gb": "256GB", "estado": "Usado", "bat": "85%", "precio": 680, "antes": null, "ars": 1071000, "qty": 2}, {"modelo": "iPhone 15 Pro", "color": "Titanio Azul", "gb": "128GB", "estado": "Usado", "bat": "100%", "precio": 680, "antes": null, "ars": 1071000, "qty": 2}, {"modelo": "iPhone 15 Pro", "color": "Titanio Natural", "gb": "128GB", "estado": "Usado", "bat": "100%", "precio": 680, "antes": null, "ars": 1071000, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Negro", "gb": "256GB", "estado": "Usado", "bat": "86%", "precio": 685, "antes": null, "ars": 1078875, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Negro", "gb": "256GB", "estado": "Usado", "bat": "88%", "precio": 700, "antes": null, "ars": 1102500, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Negro", "gb": "256GB", "estado": "Usado", "bat": "89%", "precio": 700, "antes": null, "ars": 1102500, "qty": 1}, {"modelo": "iPhone 15 Pro Max", "color": "Titanio Negro", "gb": "256GB", "estado": "Usado", "bat": "85%", "precio": 740, "antes": null, "ars": 1165500, "qty": 1}, {"modelo": "iPhone 15 Pro Max", "color": "Titanio Azul", "gb": "256GB", "estado": "Usado", "bat": "86%", "precio": 750, "antes": null, "ars": 1181250, "qty": 3}, {"modelo": "iPhone 15 Pro Max", "color": "Titanio Natural", "gb": "256GB", "estado": "Usado", "bat": "86%", "precio": 750, "antes": null, "ars": 1181250, "qty": 2}, {"modelo": "iPhone 15 Pro Max", "color": "Titanio Azul", "gb": "256GB", "estado": "Usado", "bat": "89%", "precio": 760, "antes": null, "ars": 1197000, "qty": 1}, {"modelo": "iPhone 15 Pro Max", "color": "Titanio Azul", "gb": "256GB", "estado": "Usado", "bat": "100%", "precio": 760, "antes": null, "ars": 1197000, "qty": 1}, {"modelo": "iPhone 15 Pro Max", "color": "Titanio Azul", "gb": "512GB", "estado": "Usado", "bat": "87%", "precio": 770, "antes": null, "ars": 1212750, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Negro", "gb": "128GB", "estado": "Usado", "bat": "88%", "precio": 780, "antes": null, "ars": 1228500, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Desierto", "gb": "128GB", "estado": "Usado", "bat": "89%", "precio": 790, "antes": null, "ars": 1244250, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Negro", "gb": "128GB", "estado": "Usado", "bat": "89%", "precio": 790, "antes": null, "ars": 1244250, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Desierto", "gb": "128GB", "estado": "Usado", "bat": "90%", "precio": 795, "antes": null, "ars": 1252125, "qty": 2}, {"modelo": "iPhone 16 Pro", "color": "Titanio Desierto", "gb": "128GB", "estado": "Usado", "bat": "92%", "precio": 800, "antes": null, "ars": 1260000, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Desierto", "gb": "128GB", "estado": "Usado", "bat": "91%", "precio": 800, "antes": null, "ars": 1260000, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Natural", "gb": "128GB", "estado": "Usado", "bat": "93%", "precio": 800, "antes": null, "ars": 1260000, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Negro", "gb": "128GB", "estado": "Usado", "bat": "92%", "precio": 800, "antes": null, "ars": 1260000, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Desierto", "gb": "128GB", "estado": "Usado", "bat": "93%", "precio": 810, "antes": null, "ars": 1275750, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Desierto", "gb": "256GB", "estado": "Usado", "bat": "87%", "precio": 820, "antes": null, "ars": 1291500, "qty": 2}, {"modelo": "iPhone 16 Pro", "color": "Titanio Desierto", "gb": "256GB", "estado": "Usado", "bat": "86%", "precio": 820, "antes": null, "ars": 1291500, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Natural", "gb": "256GB", "estado": "Usado", "bat": "87%", "precio": 820, "antes": null, "ars": 1291500, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Desierto", "gb": "128GB", "estado": "Usado", "bat": "94%", "precio": 820, "antes": null, "ars": 1291500, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Desierto", "gb": "256GB", "estado": "Usado", "bat": "90%", "precio": 840, "antes": null, "ars": 1323000, "qty": 2}, {"modelo": "iPhone Air", "color": "Oro Claro", "gb": "256GB", "estado": "Usado", "bat": "93%", "precio": 850, "antes": null, "ars": 1338750, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Desierto", "gb": "256GB", "estado": "Usado", "bat": "92%", "precio": 860, "antes": null, "ars": 1354500, "qty": 1}, {"modelo": "iPhone 16 Pro Max", "color": "Titanio Natural", "gb": "256GB", "estado": "Usado", "bat": "85%", "precio": 900, "antes": null, "ars": 1417500, "qty": 1}, {"modelo": "iPhone 16 Pro Max", "color": "Titanio Negro", "gb": "256GB", "estado": "Usado", "bat": "86%", "precio": 900, "antes": null, "ars": 1417500, "qty": 1}, {"modelo": "iPhone 16 Pro Max", "color": "Titanio Natural", "gb": "256GB", "estado": "Usado", "bat": "87%", "precio": 905, "antes": null, "ars": 1425375, "qty": 1}, {"modelo": "iPhone 16 Pro Max", "color": "Titanio Blanco", "gb": "256GB", "estado": "Usado", "bat": "89%", "precio": 915, "antes": null, "ars": 1441125, "qty": 1}, {"modelo": "iPhone 16 Pro Max", "color": "Titanio Negro", "gb": "256GB", "estado": "Usado", "bat": "88%", "precio": 915, "antes": null, "ars": 1441125, "qty": 1}, {"modelo": "iPhone 16 Pro Max", "color": "Titanio Blanco", "gb": "256GB", "estado": "Usado", "bat": "90%", "precio": 925, "antes": null, "ars": 1456875, "qty": 3}, {"modelo": "iPhone 16 Pro Max", "color": "Titanio Desierto", "gb": "256GB", "estado": "Usado", "bat": "92%", "precio": 935, "antes": null, "ars": 1472625, "qty": 1}, {"modelo": "iPhone 16 Pro Max", "color": "Titanio Negro", "gb": "256GB", "estado": "Usado", "bat": "92%", "precio": 935, "antes": null, "ars": 1472625, "qty": 1}, {"modelo": "iPhone 16 Pro Max", "color": "Titanio Desierto", "gb": "256GB", "estado": "Usado", "bat": "94%", "precio": 950, "antes": null, "ars": 1496250, "qty": 1}, {"modelo": "iPhone 16 Pro Max", "color": "Titanio Blanco", "gb": "512GB", "estado": "Usado", "bat": "89%", "precio": 970, "antes": null, "ars": 1527750, "qty": 1}, {"modelo": "iPhone 17 Pro Max", "color": "Plata", "gb": "256GB", "estado": "Usado", "bat": "92%", "precio": 1160, "antes": null, "ars": 1827000, "qty": 1}, {"modelo": "iPhone 17 Pro Max", "color": "Plata", "gb": "256GB", "estado": "Sellado", "bat": null, "precio": 1360, "antes": null, "ars": 2142000, "qty": 1}, {"modelo": "iPhone 18 Pro", "color": "Borgoña", "gb": "256GB", "estado": "Sellado", "bat": null, "precio": 1390, "antes": null, "ars": 2189250, "qty": 4}, {"modelo": "iPhone 18 Pro", "color": "Glaciar", "gb": "256GB", "estado": "Sellado", "bat": null, "precio": 1390, "antes": null, "ars": 2189250, "qty": 2}, {"modelo": "iPhone 17 Pro Max", "color": "Azul Profundo", "gb": "512GB", "estado": "Sellado", "bat": null, "precio": 1600, "antes": null, "ars": 2520000, "qty": 1}, {"modelo": "iPhone 18 Pro", "color": "Negro", "gb": "512GB", "estado": "Sellado", "bat": null, "precio": 1650, "antes": null, "ars": 2598750, "qty": 1}, {"modelo": "iPhone 18 Pro Max", "color": "Borgoña", "gb": "256GB", "estado": "Sellado", "bat": null, "precio": 1660, "antes": null, "ars": 2614500, "qty": 12}, {"modelo": "iPhone 18 Pro Max", "color": "Glaciar", "gb": "256GB", "estado": "Sellado", "bat": null, "precio": 1680, "antes": null, "ars": 2646000, "qty": 3}, {"modelo": "iPhone 18 Pro Max", "color": "Borgoña", "gb": "512GB", "estado": "Sellado", "bat": null, "precio": 1850, "antes": null, "ars": 2913750, "qty": 1}, {"modelo": "iPhone 18 Pro Max", "color": "Glaciar", "gb": "512GB", "estado": "Sellado", "bat": null, "precio": 1850, "antes": null, "ars": 2913750, "qty": 2}, {"modelo": "iPhone 18 Pro Max", "color": "Negro", "gb": "512GB", "estado": "Sellado", "bat": null, "precio": 1850, "antes": null, "ars": 2913750, "qty": 2}, {"modelo": "iPhone 17 Pro", "color": "Plata", "gb": "256GB", "estado": "Usado", "bat": "93%", "precio": null, "antes": null, "ars": null, "qty": 1}, {"modelo": "iPhone 16 Pro Max", "color": "Titanio Natural", "gb": "256GB", "estado": "Usado", "bat": "90%", "precio": null, "antes": null, "ars": null, "qty": 1}, {"modelo": "iPhone 16 Pro", "color": "Titanio Blanco", "gb": "128GB", "estado": "Usado", "bat": "93%", "precio": null, "antes": null, "ars": null, "qty": 1}, {"modelo": "iPhone 15", "color": "Negro", "gb": "128GB", "estado": "Usado", "bat": "88%", "precio": null, "antes": null, "ars": null, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Azul", "gb": "128GB", "estado": "Usado", "bat": "77%", "precio": null, "antes": null, "ars": null, "qty": 1}, {"modelo": "iPhone 15 Pro", "color": "Titanio Natural", "gb": "128GB", "estado": "Usado", "bat": "88%", "precio": null, "antes": null, "ars": null, "qty": 1}, {"modelo": "iPhone 14 Pro", "color": "Morado Profundo", "gb": "256GB", "estado": "Usado", "bat": "76%", "precio": null, "antes": null, "ars": null, "qty": 1}, {"modelo": "iPhone 14 Pro", "color": "Negro Espacial", "gb": "256GB", "estado": "Usado", "bat": "100%", "precio": null, "antes": null, "ars": null, "qty": 3}, {"modelo": "iPhone 14 Pro", "color": "Oro", "gb": "256GB", "estado": "Usado", "bat": "100%", "precio": null, "antes": null, "ars": null, "qty": 1}, {"modelo": "iPhone 14 Pro", "color": "Plata", "gb": "256GB", "estado": "Usado", "bat": "100%", "precio": null, "antes": null, "ars": null, "qty": 4}, {"modelo": "iPhone 14 Pro", "color": "Morado Profundo", "gb": "128GB", "estado": "Usado", "bat": "100%", "precio": null, "antes": null, "ars": null, "qty": 2}, {"modelo": "iPhone 14 Pro", "color": "Negro Espacial", "gb": "128GB", "estado": "Usado", "bat": "100%", "precio": null, "antes": null, "ars": null, "qty": 7}];
+
+var PHONE = '<rect x="7" y="2.5" width="10" height="19" rx="2.4"/><path d="M10.6 5.2h2.8"/><path d="M11 19h2"/>';
+var WAIMG = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAkFBMVEUb0mYqzFkczF4hzF2n4K9Zz2ocu0MWuGIAuygiwTwevEwA//8Af38avE3X8too46UesDdFvlkAfx8UtjtxzYS86cJqampVqlVy5aETujUAqqpV1FV///9IyVcAAAAyu0UmtTz8/f06wk5V0WNUzWIA/wAAqlUbtDUq0WMa02Yp0mTL7NAA/3+I2ZUA/1V404fC1KIQAAAAMHRSTlMg4GKc//3cFwP9oAECW/8K8v8Dl///AgMFdwMGAv4A/v7//v7+AQP+0k+w/wL/A/89FGf2AAADxElEQVR42pWXCbuqIBCGEdJSW856d4UI0mzx//+7O2AsbkXznNs5F52X7xtGA1SOQh7X8InQCZNGBSH4hBAMrY9yfDcajVzU6Ik09eEgDjri+BA15ITuFx8DLrJEmNQHE8J91JpxfAiQRzV51OUIxxDd33VzuqkpZgEgEOn02YjIUIQPgOlxbaebjFjUGPUIqJffqOnjBwoKoUUcpwCX8lSrOx6GllefytsIAOWD/OJ5ACH2CcjOj6OQ/OIgABJhS0DGP47iuAiMuHAaOsAN9BcvRY3vlUSdfvRifiFq1PW1AuQSNe4S1z9PATFBeX4HqALY9MPi/L1oAzREnQmkDdzzocBfex0h9Yy0CQDIXSOssi5/v+DiOYD8zRUAOsh5Pt8BexEi4aTaX/oVvJp8kBDQDg36kOg2KWC/DVlLDu2E8pIYAI/3LtoACREp18guAQCuHuCbh/QjpJfY3skXHmAveJAH5BwUtAcIKSMn8Pp3T0HPQhAAPCBkSzgAhFiAbkSuBP1VuPKghcSIeP99P79mQAMazl0Vr94ihtQQqggAWvAuYMAaSM3gw1CAiFM3wIyELedhgAgAvdiaGrAQCZTXAwBtjYk4LWgAIOpb4F43vvMAgq7BgGlMnCkvnisgiMAvP5iwrUDhht41PhzoAIN7mGsGSgs7ToWgbJivAHg0CbNlOBfMXGXQ5ucWEAMAhodpOMap6+gvM+l7R/waILh6Goe24B7vmSgYU3eYkW1PBawi+kmGEtR8230PwbxXDRhxgEa/0kb5nBVb/9Uieq8q5cuWAACjIijXvotRXB0A0vM/Ux6AsJgFxAbAsx8/0KrcTAE4Y+0cQDDnYKm+nCI6GZWYtnF2a7CDL0a1O+DTBBCxnQC0noCj/nqfkwAiaDtSsaiYEbCUen9wgw3KHIFVdLCGbWUdbNQWRSk4rgin84iKxpaxeDf5jGc/V3aPtOGM0ocM0V6v15hWjJlWTlC5vgNW8P3I5oKqf/BRVW9VVenS6uD3jaKykMNriT0K9/wYJEvNZlefH1DEXgrKUmK2/Eg5wPw1AOPkl5QWIB+VYDw7OEizncy93foyeWX2isEetZTuvACt/Jp+yJfSO7F8lJ/mUpok9Gk+WZb+CRZBDbNOWpLh5Q7T+Xq8vbGUbvLBsQ+22imvouw3XnYDWZLOuU8TddO6f/C8lZuEbHSyXF3WH1BTnFRTjCTZqK6Ro6Pvr39dcnclXylEBn2rCm4nj5JPNftKTh6+jytf1kV53AHkM6IMQDT5zDZop45W6/Hx/z9itdxbKEPTRQAAAABJRU5ErkJggg==" alt="" width="14" height="14">';
+var WA = "https://wa.me/5493426213030?text=";
+var fmt = new Intl.NumberFormat("es-AR");
+
+function serie(m) {
+  var r = /^iPhone (\d+|Air)/.exec(m);
+  return r ? "iPhone " + r[1] : m;
+}
+function batNum(b) {
+  if (!b) return -1;
+  return parseInt(b, 10);
+}
+function ordenSerie(a, b) {
+  var na = /\d+/.exec(a), nb = /\d+/.exec(b);
+  if (!na) return 1;
+  if (!nb) return -1;
+  return parseInt(na[0], 10) - parseInt(nb[0], 10);
+}
+function cmpPrecio(a, b, dir) {
+  if (a.precio == null && b.precio == null) return 0;
+  if (a.precio == null) return 1;
+  if (b.precio == null) return -1;
+  return dir * (a.precio - b.precio);
+}
+PRODUCTOS.forEach(function (p) { p.serie = serie(p.modelo); });
+
+var unicas = PRODUCTOS.map(function (p) { return p.serie; }).filter(function (c, i, a) { return a.indexOf(c) === i; });
+var series = ["Todos"].concat(unicas.sort(ordenSerie));
+var estados = ["Todos", "Sellado", "Usado"];
+var serieActiva = "Todos";
+var estadoActivo = "Todos";
+
+var serieEl = document.getElementById("series");
+var estadoEl = document.getElementById("estados");
+var gridEl = document.getElementById("grid");
+var countEl = document.getElementById("count");
+var emptyEl = document.getElementById("empty");
+var qEl = document.getElementById("q");
+var sortEl = document.getElementById("sort");
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
+}
+
+function chips(lista, activo, attr) {
+  return lista.map(function (c) {
+    return '<button class="chip" type="button" data-' + attr + '="' + esc(c) + '" aria-pressed="' + (c === activo) + '">' + esc(c) + "</button>";
+  }).join("");
+}
+function pintarChips() {
+  serieEl.innerHTML = chips(series, serieActiva, "serie");
+  estadoEl.innerHTML = chips(estados, estadoActivo, "estado");
+}
+
+function waLink(p) {
+  var msg = "Hola! Quiero consultar por el " + p.modelo + " " + p.gb + " " + p.color + " (" + p.estado + ")" + (p.precio != null ? " a US$ " + p.precio : "");
+  return '<a class="wa-link" href="' + WA + encodeURIComponent(msg) + '" target="_blank" rel="noopener">' + WAIMG + "Consultar</a>";
+}
+
+function precioHtml(p) {
+  if (p.precio == null) return '<div class="pricebox"><span class="price ask">Consultar precio</span></div>';
+  var antes = p.antes ? '<span class="old">US$ ' + fmt.format(p.antes) + "</span>" : "";
+  return '<div class="pricebox"><span class="price">US$ ' + fmt.format(p.precio) + " <small>c/u</small>" + antes + "</span>" +
+    '<span class="ars">$ ' + fmt.format(p.ars) + "</span></div>";
+}
+
+function pintar() {
+  var q = qEl.value.trim().toLowerCase();
+  var lista = PRODUCTOS.filter(function (p) {
+    var okS = serieActiva === "Todos" || p.serie === serieActiva;
+    var okE = estadoActivo === "Todos" || p.estado === estadoActivo;
+    var okQ = !q || (p.modelo + " " + p.gb + " " + p.color + " " + p.estado).toLowerCase().indexOf(q) !== -1;
+    return okS && okE && okQ;
+  });
+  var orden = sortEl.value;
+  if (orden === "asc") lista.sort(function (a, b) { return cmpPrecio(a, b, 1); });
+  if (orden === "desc") lista.sort(function (a, b) { return cmpPrecio(a, b, -1); });
+  if (orden === "bat") lista.sort(function (a, b) { return batNum(b.bat) - batNum(a.bat) || cmpPrecio(a, b, 1); });
+
+  var unidades = 0;
+  gridEl.innerHTML = lista.map(function (p) {
+    unidades += p.qty;
+    var nuevo = p.estado === "Sellado";
+    var stock = p.qty === 1
+      ? '<span class="stock low">Última unidad</span>'
+      : '<span class="stock ok">' + p.qty + " unidades</span>";
+    var bat = p.bat ? '<p class="bat">Batería ' + esc(p.bat) + "</p>" : '<p class="bat">Nuevo en caja</p>';
+    return '<article class="card"><div class="thumb"><span class="badge' + (nuevo ? " new" : "") + '">' + esc(p.estado) + "</span>" +
+      '<svg viewBox="0 0 24 24" aria-hidden="true">' + PHONE + "</svg></div>" +
+      '<div class="info"><span class="cat">' + esc(p.serie) + '</span><h2 class="name">' + esc(p.modelo) + "</h2>" +
+      '<p class="spec">' + esc(p.gb) + " · " + esc(p.color) + "</p>" + bat +
+      '<div class="foot">' + precioHtml(p) + stock + "</div>" + waLink(p) + "</div></article>";
+  }).join("");
+  countEl.textContent = lista.length + (lista.length === 1 ? " opción" : " opciones") + " · " + unidades + (unidades === 1 ? " equipo" : " equipos");
+  emptyEl.hidden = lista.length !== 0;
+}
+
+serieEl.addEventListener("click", function (e) {
+  var b = e.target.closest(".chip");
+  if (!b) return;
+  serieActiva = b.getAttribute("data-serie");
+  pintarChips();
+  pintar();
+});
+estadoEl.addEventListener("click", function (e) {
+  var b = e.target.closest(".chip");
+  if (!b) return;
+  estadoActivo = b.getAttribute("data-estado");
+  pintarChips();
+  pintar();
+});
+qEl.addEventListener("input", pintar);
+sortEl.addEventListener("change", pintar);
+pintarChips();
+pintar();
+
+var copyBtn = document.getElementById("copy");
+copyBtn.addEventListener("click", function () {
+  var num = "+543426213030";
+  function ok() { copyBtn.textContent = "Copiado"; setTimeout(function () { copyBtn.textContent = "Copiar número"; }, 1800); }
+  function manual() {
+    var r = document.createRange();
+    r.selectNodeContents(document.getElementById("tel"));
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
+  try {
+    navigator.clipboard.writeText(num).then(ok, manual);
+  } catch (e) { manual(); }
+});
+</script>
+
+</body>
+</html>
